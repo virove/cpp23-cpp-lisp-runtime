@@ -2,7 +2,13 @@
 add_library(runtime STATIC
         lisp_runtime.h
         s_expr.h
-        s_expr.cpp
+        cell_factory.h
+        simple_lisp_runtime.cpp
+        simple_lisp_runtime.h
+        simple_cell_factory.cpp
+        simple_cell_factory.h
+        mem/alloc_operation.h
+        runtime_defines.h
 )
 
 
