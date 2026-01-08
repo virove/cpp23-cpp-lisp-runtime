@@ -2,32 +2,34 @@
 #include "app/app.h"
 #include "runtime/lisp_runtime.h"
 
+#include "simple_lisp_runtime.h"
+#include "simple_cell_factory.h"
+
 namespace di = boost::di;
 
-class LispRuntimeImpl : public lisp_runtime::LispRuntime{
+class AllocOperationStub : public lisp_runtime::mem::mgr::AllocOperation{
 public:
-    ~LispRuntimeImpl() override = default;
+    ~AllocOperationStub() override= default;
 
-    SExpr Eval(SExpr expression, SExpr context) override {
-        return {};
-    }
+private:
+    void Init() override {}
 
-    SExpr Apply(SExpr function, SExpr arguments, SExpr context) override {
-        return {};
-    }
-
-    void Init() override {
-    }
-
-    void Shutdown() override {
+    lisp_runtime::mem::Cell * Allocate() override {
+        return nullptr;
     }
 };
 
 int main(){
-    auto injector = di::make_injector(
-            di::bind<lisp_runtime::LispRuntime>().to<LispRuntimeImpl>() );
+    std::unique_ptr<app::App> app;
 
-    auto app = injector.create<std::unique_ptr<app::App>>();
+        auto injector = di::make_injector(
+                di::bind<lisp_runtime::LispRuntime>().to<lisp_runtime::SimpleLispRuntime>() ,
+                di::bind<lisp_runtime::CellFactory>().to<lisp_runtime::SimpleCellFactory>(),
+                di::bind<lisp_runtime::mem::mgr::AllocOperation>().to<AllocOperationStub>()
+        );
+
+    app = injector.create<std::unique_ptr<app::App>>();
+
     app->Init();
     app->Run();
     app->Shutdown();

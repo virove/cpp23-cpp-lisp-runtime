@@ -4,15 +4,14 @@ project(cpp23-cpp-lisp-runtime)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
 enable_testing()
 include(FetchContent)
-
 
 FetchContent_Declare(
         googletest
         URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
+
 FetchContent_Declare(
         boost_di
         GIT_REPOSITORY https://github.com/boost-ext/di.git
@@ -22,15 +21,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 FetchContent_MakeAvailable(boost_di)
 
-
-
 add_subdirectory(runtime)
 add_subdirectory(app)
 add_subdirectory(tests)
 
 add_executable( cpp23-cpp-lisp-runtime
         main.cpp
-        runtime/s_expr.cpp
 )
 
 target_include_directories(cpp23-cpp-lisp-runtime PRIVATE

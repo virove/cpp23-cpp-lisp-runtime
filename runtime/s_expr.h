@@ -5,9 +5,10 @@
 #ifndef S_EXPR_H
 #define S_EXPR_H
 
-
-class SExpr {
-};
+namespace lisp_runtime{
+    class SExpr {
+    };
+}
 
 
 #endif //S_EXPR_H
