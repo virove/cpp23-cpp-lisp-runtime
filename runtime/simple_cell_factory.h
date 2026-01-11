@@ -5,27 +5,27 @@
 
 #include "cell_factory.h"
 #include "mem/alloc_operation.h"
-#include "runtime_defines.h"
+#include "defines.h"
 
 namespace lisp_runtime {
 
     class SimpleCellFactory : public CellFactory{
     public:
-        SimpleCellFactory(std::unique_ptr<mem::mgr::AllocOperation> alloc_operation, const RuntimeDefines &runtime_defines);
+        SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation, std::shared_ptr<foundation::Defines> runtime_defines);
 
         ~SimpleCellFactory() override;
 
-        [[nodiscard]]const mem::Cell *CreateNumber(int number) override;
+        [[nodiscard]]const foundation::mem::Cell *CreateNumber(int number) override;
 
-        [[nodiscard]]    mem::CellList *CreateListCell(mem::Cell*  head, mem::Cell*  tail) override ;
-        [[nodiscard]]    mem::CellList *CreateListCell(mem::Cell*  head) override;
+        [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) override ;
+        [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) override;
 
 
     private:
-        std::unique_ptr<mem::mgr::AllocOperation> alloc_operation_;
-        const lisp_runtime::RuntimeDefines& runtime_defines_;
+        std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation_;
+        std::shared_ptr<foundation::Defines> runtime_defines_;
     };
 
-} // lisp_runtime
+} // foundation
 
 #endif //SIMPLE_CELL_FACTORY_H

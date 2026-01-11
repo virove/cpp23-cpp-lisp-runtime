@@ -14,6 +14,6 @@ namespace lisp_runtime{
         virtual SExpr Apply(SExpr function, SExpr arguments, SExpr context) = 0;
     };
 
-} //namespace lisp_runtime
+} //namespace foundation
 
 #endif //CPP23_CPP_LISP_RUNTIME_LISPRUNTIME_H

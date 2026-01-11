@@ -3,14 +3,14 @@
 
 #include <memory>
 #include "lisp_runtime.h"
-#include "runtime_defines.h"
+#include "defines.h"
 
 namespace app{
 
     class App final {
     public:
         explicit App(std::unique_ptr<lisp_runtime::LispRuntime> lisp_runtime,
-                     std::shared_ptr<lisp_runtime::RuntimeDefines> runtime_defines)
+                     std::shared_ptr<foundation::Defines> runtime_defines)
         : lisp_runtime_{std::move(lisp_runtime)}, defines_{std::move(runtime_defines)}
         {}
 
@@ -21,7 +21,7 @@ namespace app{
         void Shutdown() ;
     private:
         std::unique_ptr<lisp_runtime::LispRuntime> lisp_runtime_;
-        std::shared_ptr<lisp_runtime::RuntimeDefines> defines_;
+        std::shared_ptr<foundation::Defines> defines_;
     };
 
 } // namespace app
