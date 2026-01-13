@@ -1,7 +1,7 @@
 #ifndef LISP_RUNTIME_ATOM_H
 #define LISP_RUNTIME_ATOM_H
 
-namespace lisp_runtime {
+namespace foundation {
     using ATOM = unsigned long;
 }
 

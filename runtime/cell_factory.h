@@ -4,7 +4,6 @@
 #include <string>
 #include <optional>
 
-#include "atom.h"
 #include "mem/cell.h"
 
 namespace lisp_runtime {
@@ -12,9 +11,9 @@ namespace lisp_runtime {
     class CellFactory {
     public:
         virtual ~CellFactory() = default;
-        [[nodiscard]] virtual const mem::Cell*      CreateNumber(int number) = 0;
-        [[nodiscard]] virtual  mem::CellList *CreateListCell(mem::Cell*  head, mem::Cell*  tail) = 0;
-        [[nodiscard]] virtual  mem::CellList *CreateListCell(mem::Cell*  head) = 0;
+        [[nodiscard]] virtual const foundation::mem::Cell*      CreateNumber(int number) = 0;
+        [[nodiscard]] virtual foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) = 0;
+        [[nodiscard]] virtual  foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) = 0;
     };
 
 } // lisp_runtime

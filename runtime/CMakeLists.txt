@@ -7,12 +7,17 @@ add_library(runtime STATIC
         simple_lisp_runtime.h
         simple_cell_factory.cpp
         simple_cell_factory.h
-        mem/alloc_operation.h
-        runtime_defines.h
 )
 
 
 target_include_directories(runtime
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+
+)
+
+
+target_link_libraries(runtime
+        PUBLIC
+        foundation
 )
