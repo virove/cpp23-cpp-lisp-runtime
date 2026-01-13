@@ -3,7 +3,7 @@
 
 #include "atom.h"
 
-namespace lisp_runtime {
+namespace foundation {
 
     namespace mem {
         struct Cell {
@@ -30,7 +30,7 @@ namespace lisp_runtime {
                     const Cell *head_{nullptr};
                     const Cell *tail_{nullptr};
                 };
-                lisp_runtime::ATOM atom_;
+                foundation::ATOM atom_;
                 int number_;
             };
             Type type_;
@@ -39,7 +39,7 @@ namespace lisp_runtime {
 
         struct CellAtom : Cell {
             CellAtom() = delete;
-            explicit CellAtom(lisp_runtime::ATOM atom) : Cell(Type::AtomType) {
+            explicit CellAtom(foundation::ATOM atom) : Cell(Type::AtomType) {
                 atom_ = atom;
             }
         };
@@ -61,6 +61,6 @@ namespace lisp_runtime {
             }
         };
     }
-} // namespace lisp_runtime
+} // namespace foundation
 
 #endif //LISP_RUNTIME_CELL_H

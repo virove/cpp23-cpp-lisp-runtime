@@ -1,5 +1,3 @@
-#include <iostream>
-#include <memory>
 #include "simple_lisp_runtime.h"
 
 void lisp_runtime::SimpleLispRuntime::Init() {

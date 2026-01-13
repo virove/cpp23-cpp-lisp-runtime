@@ -23,6 +23,7 @@ FetchContent_MakeAvailable(boost_di)
 
 add_subdirectory(runtime)
 add_subdirectory(app)
+add_subdirectory(foundation)
 add_subdirectory(tests)
 
 add_executable( cpp23-cpp-lisp-runtime

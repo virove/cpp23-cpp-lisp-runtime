@@ -1,15 +1,18 @@
 #ifndef SIMPLE_LISP_RUNTIME_H
 #define SIMPLE_LISP_RUNTIME_H
 
+#include <memory>
+
 #include "lisp_runtime.h"
 #include "cell_factory.h"
+#include "atom_factory.h"
 
 namespace lisp_runtime{
 
     class SimpleLispRuntime : public LispRuntime {
     public:
-        explicit SimpleLispRuntime( std::unique_ptr<lisp_runtime::CellFactory> cell_factory)
-            : cell_factory_{std::move(cell_factory)}{
+        explicit SimpleLispRuntime(std::unique_ptr<lisp_runtime::CellFactory> cell_factory, std::shared_ptr< foundation::AtomFactory> atom_factory)
+            : cell_factory_{std::move(cell_factory)}, atom_factory_{std::move(atom_factory)}{
         }
 
         ~SimpleLispRuntime() override;
@@ -23,8 +26,9 @@ namespace lisp_runtime{
         SExpr Apply(SExpr function, SExpr arguments, SExpr context) override;
     public:
         std::unique_ptr<lisp_runtime::CellFactory> cell_factory_;
+        std::shared_ptr< foundation::AtomFactory> atom_factory_;
     };
 
-} // namespace lisp_runtime
+} // namespace foundation
 
 #endif //SIMPLE_LISP_RUNTIME_H
