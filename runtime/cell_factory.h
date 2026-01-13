@@ -14,6 +14,7 @@ namespace lisp_runtime {
         [[nodiscard]] virtual const foundation::mem::Cell*      CreateNumber(int number) = 0;
         [[nodiscard]] virtual foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) = 0;
         [[nodiscard]] virtual  foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) = 0;
+        [[nodiscard]] virtual foundation::mem::Cell* GetOrCreate(const std::string& atomname) = 0;
     };
 
 } // lisp_runtime

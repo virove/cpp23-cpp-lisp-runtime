@@ -11,19 +11,21 @@ namespace lisp_runtime {
 
     class SimpleCellFactory : public CellFactory{
     public:
-        SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation, std::shared_ptr<foundation::Defines> runtime_defines);
+        SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation,
+                          std::shared_ptr<foundation::AtomFactory> atom_factory,
+                          std::shared_ptr<foundation::Defines> runtime_defines);
 
         ~SimpleCellFactory() override;
 
         [[nodiscard]]const foundation::mem::Cell *CreateNumber(int number) override;
-
         [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) override ;
         [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) override;
-
+        [[nodiscard]]    foundation::mem::Cell *GetOrCreate(const std::string &atomname) override;
 
     private:
         std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation_;
         std::shared_ptr<foundation::Defines> runtime_defines_;
+        std::shared_ptr<foundation::AtomFactory> atom_factory_;
     };
 
 } // foundation
