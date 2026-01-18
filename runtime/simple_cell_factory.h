@@ -9,6 +9,13 @@
 
 namespace lisp_runtime {
 
+
+    class MemoryAllocationNoMemoryError : public std::runtime_error{
+    public:
+        explicit MemoryAllocationNoMemoryError(const std::string &arg) : runtime_error(arg) {
+        }
+    };
+
     class SimpleCellFactory : public CellFactory{
     public:
         SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation,

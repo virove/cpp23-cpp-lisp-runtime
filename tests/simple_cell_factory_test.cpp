@@ -14,13 +14,7 @@ using ::testing::Return;
 
 namespace di = boost::di;
 
-class AllocOperationMock : public foundation::mem::mgr::AllocOperation{
-public:
-    ~AllocOperationMock() override = default;
 
-    MOCK_METHOD(void, Init,(),(override));
-    MOCK_METHOD(foundation::mem::Cell *, Allocate, (), (override));
-};
 
 TEST(SimpleCellFactoryTest, create_number_cell) {
     auto* alloc_operation_mock = new AllocOperationMock();
@@ -28,7 +22,7 @@ TEST(SimpleCellFactoryTest, create_number_cell) {
     auto injector = di::make_injector(
             di::bind<foundation::mem::mgr::AllocOperation>().to([alloc_operation_mock](){ return  std::unique_ptr<foundation::mem::mgr::AllocOperation>{alloc_operation_mock}; }),
             di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>(),
-            di::bind<foundation::MemoryManagement>().to<MemoryManagementMock>()
+            di::bind<foundation::mem::mgr::MemoryManagement>().to<MemoryManagementMock>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;
@@ -51,7 +45,7 @@ TEST(SimpleCellFactoryTest, create_list_cell) {
     auto injector = di::make_injector(
             di::bind<foundation::mem::mgr::AllocOperation>().to([alloc_operation_mock](){ return  std::unique_ptr<foundation::mem::mgr::AllocOperation>{alloc_operation_mock}; }),
             di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>(),
-            di::bind<foundation::MemoryManagement>().to<MemoryManagementMock>()
+            di::bind<foundation::mem::mgr::MemoryManagement>().to<MemoryManagementMock>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;

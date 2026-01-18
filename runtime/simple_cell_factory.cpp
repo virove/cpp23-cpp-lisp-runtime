@@ -2,12 +2,6 @@
 
 #include "simple_cell_factory.h"
 
-const foundation::mem::Cell *lisp_runtime::SimpleCellFactory::CreateNumber(int number) {
-        auto allocated_memory = alloc_operation_->Allocate();
-
-        return new (allocated_memory) foundation::mem::CellNumber(number);
-}
-
 lisp_runtime::SimpleCellFactory::SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation,
                                                     std::shared_ptr<foundation::AtomFactory> atom_factory,
                                                     std::shared_ptr<foundation::Defines> runtime_defines)
@@ -22,20 +16,36 @@ lisp_runtime::SimpleCellFactory::~SimpleCellFactory()  = default;
 
 foundation::mem::CellList *
 lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, foundation::mem::Cell *tail) {
+    auto an_optional_cell = alloc_operation_->Allocate();
+    if(!an_optional_cell.has_value()){
+        throw MemoryAllocationNoMemoryError("Failed to allocate memory");
+    }
+
+    return  new (an_optional_cell.value()) foundation::mem::CellList(head, tail) ;
+}
+
+const foundation::mem::Cell *lisp_runtime::SimpleCellFactory::CreateNumber(int number) {
     auto allocated_memory = alloc_operation_->Allocate();
 
-    return new (allocated_memory) foundation::mem::CellList(head, tail);
+    if(allocated_memory.has_value()){
+        return new(allocated_memory.value()) foundation::mem::CellNumber(number);
+    } else{
+        throw MemoryAllocationNoMemoryError("Failed to allocate memory for the number" + std::to_string( number ));
+    }
 }
+
 
 foundation::mem::CellList *lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head) {
     return CreateListCell(head, foundation::Defines::NIL());
 }
 
 foundation::mem::Cell *lisp_runtime::SimpleCellFactory::GetOrCreate(const std::string &atomname) {
-    return atom_factory_->GetOrCreate(atomname);
+    auto an_optional_cell = atom_factory_->GetOrCreate(atomname);
+    if(!an_optional_cell.has_value()){
+        throw MemoryAllocationNoMemoryError("Failed to allocate memory for symbol" + atomname);
+    }
+    return an_optional_cell.value();
 }
-
-
 
 
 
