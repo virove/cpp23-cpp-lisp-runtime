@@ -15,7 +15,7 @@ namespace foundation{
         virtual void Init() = 0;
 
         virtual std::optional<std::string>  GetAtomName(foundation::ATOM atom) const = 0;
-        virtual foundation::mem::Cell* GetOrCreate(const std::string& atomname) = 0;
+        virtual std::optional<foundation::mem::Cell*> GetOrCreate(const std::string& atomname) = 0;
 
         template<typename T>
         std::optional<T> GetProperty(foundation::ATOM,foundation::ATOM property_name)const;

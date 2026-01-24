@@ -10,27 +10,18 @@ namespace foundation{
 
     class Defines {
     public:
-        explicit Defines(std::shared_ptr<foundation::AtomFactory> atom_factory)
-            : atom_factory_{std::move(atom_factory)}{
-        }
+        Defines() = default;
 
-        void Init(){
-            nil_ = atom_factory_->GetOrCreate("NIL");
-            t_ = atom_factory_->GetOrCreate("T");
+        void Init(foundation::mem::Cell * nil, foundation::mem::Cell * t){
+            nil_ = nil;
+            t_ = t;
         }
-
-        static constexpr unsigned long k_ATOM_NAME = 1;
-        static constexpr unsigned long k_NIL_AtomValue = 2;
-        static constexpr unsigned  long k_T_AtomValue = 3;
 
         inline  static foundation::mem::Cell *  NIL(){ return nil_; }
         inline  static  foundation::mem::Cell *  T(){ return t_; }
-
     private:
         inline static foundation::mem::Cell * nil_{nullptr};
         inline static foundation::mem::Cell * t_{nullptr};
-
-        std::shared_ptr<foundation::AtomFactory> atom_factory_;
     };
 
 } //namespace foundation

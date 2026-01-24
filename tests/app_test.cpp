@@ -4,7 +4,7 @@
 
 #include "app.h"
 #include "atom_factory_impl.h"
-#include "memory_management.h"
+#include "mem/simple_memory_management.h"
 #include "mocks/memory_management_mock.h"
 
 using ::testing::_;
@@ -26,7 +26,7 @@ TEST(AppTest, InitTest) {
                 return std::unique_ptr<lisp_runtime::LispRuntime> {lisp_runtime_mock};
             }),
             di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>(),
-            di::bind<foundation::MemoryManagement>().to<MemoryManagementMock>()
+            di::bind<foundation::mem::mgr::MemoryManagement>().to<MemoryManagementMock>()
     );
 
     auto app = injector.create<std::unique_ptr<app::App>>();

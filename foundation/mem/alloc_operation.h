@@ -8,14 +8,20 @@ namespace foundation {
     namespace mem {
         namespace mgr {
 
+            class CouldNotAllocateMemoryException : public  std::exception{
+            };
+
+            class CouldNotAllocateMemoryInArenaException : public  std::exception{
+            };
+
             class AllocOperation {
             public:
                 virtual ~AllocOperation() = default;
                 virtual void Init() = 0;
-                virtual mem::Cell* Allocate() = 0;
+                virtual std::optional<foundation::mem::Cell*>  Allocate() = 0;
             };
         } // mgr
     } // mem
-} // foundation // namespace NAMESPACES_CLOSE
+} // foundation
 
 #endif //ALLOC_OPERATION_H

@@ -7,14 +7,13 @@
 #include <memory>
 
 #include "atom_factory.h"
-#include "memory_management.h"
+#include "mem/simple_memory_management.h"
 
 namespace foundation {
 
     class AtomFactoryImpl : public AtomFactory{
     public:
-
-        explicit AtomFactoryImpl(std::shared_ptr<foundation::MemoryManagement> memory_management)
+        explicit AtomFactoryImpl(std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management)
         : memory_management_{std::move(memory_management)}
         {}
 
@@ -24,20 +23,22 @@ namespace foundation {
             GetOrCreate("T");
         }
 
-        foundation::mem::Cell *GetOrCreate(const std::string& atomname) override {
+        std::optional<foundation::mem::Cell*> GetOrCreate(const std::string& atomname) override {
             std::lock_guard<std::mutex> _lock(mutex_);
 
-            auto find_result = string_to_atom_.find(atomname);
-            if(find_result == string_to_atom_.end()){
+            if(auto find_result = string_to_atom_.find(atomname); find_result == string_to_atom_.end()){
                 unsigned long atom = ++last_allocated_atom;
                 auto allocated_memory = memory_management_->Allocate();
-                auto* node_atom = new (allocated_memory) foundation::mem::CellAtom(atom);
-                string_to_atom_.emplace(atomname, node_atom);
-                AtomProperties atom_properties = {{atom_name_properties, atomname}};
-                atom_to_properties_.emplace(atom, atom_properties);
+                if(allocated_memory.has_value()){
+                    auto* node_atom = new (allocated_memory.value()) foundation::mem::CellAtom(atom);
+                    string_to_atom_.emplace(atomname, node_atom);
+                    AtomProperties atom_properties = {{atom_name_properties, atomname}};
+                    atom_to_properties_.emplace(atom, atom_properties);
 
-                return node_atom;
-
+                    return node_atom;
+                } else{
+                    return std::nullopt;
+                }
             } else{
                 return find_result->second;
             }
@@ -50,23 +51,21 @@ namespace foundation {
         void SetProperty(foundation::ATOM, foundation::ATOM name, T&& value);
 
         std::optional<std::string>  GetAtomName(foundation::ATOM atom) const override{
-            {
-                auto find_result = atom_to_properties_.find(atom);
-                if(find_result != atom_to_properties_.end()){
-                    auto find_property_result = find_result->second.find(atom_name_properties);
+        {
+            if(auto find_result = atom_to_properties_.find(atom); find_result != atom_to_properties_.end()){
+                auto find_property_result = find_result->second.find(atom_name_properties);
 
-                    if(find_property_result != find_result->second.end()){
-                        return std::any_cast<std::string>(find_property_result->second);
-                    } else{
-                        return std::nullopt;
-                    }
-                }
-                else{
+                if(find_property_result != find_result->second.end()){
+                    return std::any_cast<std::string>(find_property_result->second);
+                } else{
                     return std::nullopt;
                 }
             }
+            else{
+                return std::nullopt;
+            }
         }
-
+    }
 
     private:
         using AtomProperties = std::unordered_map<foundation::ATOM, std::any>;
@@ -74,7 +73,7 @@ namespace foundation {
         using AtomToProperties= std::unordered_map<foundation::ATOM, AtomProperties>;
         const foundation::ATOM atom_name_properties = {1};
 
-        std::shared_ptr<foundation::MemoryManagement> memory_management_;
+        std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management_;
 
         StringToAtom string_to_atom_;
         AtomToProperties atom_to_properties_;
@@ -84,8 +83,7 @@ namespace foundation {
 
     template<typename T>
     void AtomFactoryImpl::SetProperty(foundation::ATOM atom, foundation::ATOM property_name, T &&value)  {
-        auto iter = atom_to_properties_.find(atom);
-        if(iter != atom_to_properties_.end()){
+        if( auto iter = atom_to_properties_.find(atom) ; iter != atom_to_properties_.end()){
             auto& properties = iter->second;
             T t = value;
             properties[property_name] = t;
@@ -94,14 +92,13 @@ namespace foundation {
 
     template<typename T>
     std::optional<T>  AtomFactoryImpl::GetProperty(foundation::ATOM atom, foundation::ATOM property_name ) const {
-        auto iter = atom_to_properties_.find(atom);
-        if(iter == atom_to_properties_.end()){
+        if(auto iter = atom_to_properties_.find(atom); iter == atom_to_properties_.end()){
             return std::optional<T>();
         }
         else{
             const auto& properties = iter->second;
-            auto properties_iter = properties.find(property_name);
-            if(properties_iter == properties.end()){
+
+            if(auto properties_iter = properties.find(property_name); properties_iter == properties.end()){
                 return std::optional<T>();
             } else{
                 if(properties_iter->second.has_value()){
