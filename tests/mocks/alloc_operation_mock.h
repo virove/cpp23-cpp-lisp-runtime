@@ -13,6 +13,7 @@ public:
     ~AllocOperationMock() override = default;
 
     MOCK_METHOD(void, Init,(),(override));
+    MOCK_METHOD(void, Shutdown,(),(override));
     MOCK_METHOD( std::optional<foundation::mem::Cell*>, Allocate,() ,(override));
 };
 

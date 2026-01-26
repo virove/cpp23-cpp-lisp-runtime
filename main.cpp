@@ -9,6 +9,7 @@
 #include "mem/simple_memory_management.h"
 
 
+static const int kPreallocatedMemory_CellNumber = 1024*300;
 namespace di = boost::di;
 
 class AllocOperationStub : public foundation::mem::mgr::AllocOperation{
@@ -40,12 +41,15 @@ int main(){
     std::unique_ptr<app::App> app;
 
         auto injector = di::make_injector(
-                di::bind<lisp_runtime::LispRuntime>().to<lisp_runtime::SimpleLispRuntime>() ,
+                di::bind<std::size_t>().named(foundation::mem::mgr::number_of_preallocated_nodes).to(static_cast<std::size_t>(kPreallocatedMemory_CellNumber)),
+                di::bind<lisp_runtime::LispRuntime>().in(di::singleton).to<lisp_runtime::SimpleLispRuntime>() ,
                 di::bind<lisp_runtime::CellFactory>().to<lisp_runtime::SimpleCellFactory>(),
-                di::bind<foundation::mem::mgr::AllocOperation>().to<AllocOperationStub>(),
                 di::bind<foundation::AtomFactory>().in(di::singleton).to<foundation::AtomFactoryImpl>(),
-                di::bind<foundation::mem::mgr::SimpleMemoryManagement>().to<MemoryManagementStub>()
+                di::bind<foundation::mem::mgr::AllocatorFromArena>,
+                di::bind<foundation::mem::mgr::MemoryManagement>().in(di::singleton).to<foundation::mem::mgr::SimpleMemoryManagement>()
         );
+
+
 
     app = injector.create<std::unique_ptr<app::App>>();
 

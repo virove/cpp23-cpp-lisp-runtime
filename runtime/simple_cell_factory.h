@@ -3,8 +3,8 @@
 
 #include <memory>
 
+#include "mem/memory_management.h"
 #include "cell_factory.h"
-#include "mem/alloc_operation.h"
 #include "defines.h"
 
 namespace lisp_runtime {
@@ -18,7 +18,7 @@ namespace lisp_runtime {
 
     class SimpleCellFactory : public CellFactory{
     public:
-        SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation,
+        SimpleCellFactory(std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management,
                           std::shared_ptr<foundation::AtomFactory> atom_factory,
                           std::shared_ptr<foundation::Defines> runtime_defines);
 
@@ -30,7 +30,7 @@ namespace lisp_runtime {
         [[nodiscard]]    foundation::mem::Cell *GetOrCreate(const std::string &atomname) override;
 
     private:
-        std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation_;
+        std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management_;
         std::shared_ptr<foundation::Defines> runtime_defines_;
         std::shared_ptr<foundation::AtomFactory> atom_factory_;
     };

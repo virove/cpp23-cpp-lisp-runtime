@@ -5,6 +5,7 @@
 #include <any>
 #include <mutex>
 #include <memory>
+#include <iostream>
 
 #include "atom_factory.h"
 #include "mem/simple_memory_management.h"
@@ -15,12 +16,16 @@ namespace foundation {
     public:
         explicit AtomFactoryImpl(std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management)
         : memory_management_{std::move(memory_management)}
-        {}
+        {
+        }
 
         void Init() override {
             GetOrCreate("ATOM_NAME");
             GetOrCreate("NIL");
             GetOrCreate("T");
+        }
+
+        void Shutdown() override {
         }
 
         std::optional<foundation::mem::Cell*> GetOrCreate(const std::string& atomname) override {
@@ -93,20 +98,20 @@ namespace foundation {
     template<typename T>
     std::optional<T>  AtomFactoryImpl::GetProperty(foundation::ATOM atom, foundation::ATOM property_name ) const {
         if(auto iter = atom_to_properties_.find(atom); iter == atom_to_properties_.end()){
-            return std::optional<T>();
+            return std::nullopt;
         }
         else{
             const auto& properties = iter->second;
 
             if(auto properties_iter = properties.find(property_name); properties_iter == properties.end()){
-                return std::optional<T>();
+                return std::nullopt;
             } else{
                 if(properties_iter->second.has_value()){
                     auto& orig = properties_iter->second;
                     T value = std::any_cast<T>(orig);
                     return std::optional<T>(value);
                 } else{
-                    return std::optional<T>();
+                    return std::nullopt;
                 }
             }
         }

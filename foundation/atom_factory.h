@@ -13,6 +13,7 @@ namespace foundation{
     public:
         virtual ~AtomFactory()  = default;
         virtual void Init() = 0;
+        virtual void Shutdown() = 0;
 
         virtual std::optional<std::string>  GetAtomName(foundation::ATOM atom) const = 0;
         virtual std::optional<foundation::mem::Cell*> GetOrCreate(const std::string& atomname) = 0;

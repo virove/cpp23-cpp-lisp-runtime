@@ -43,7 +43,6 @@ namespace foundation {
                     : allocator_from_arena_from_arena_(std::move(allocator_from_arena_from_arena)),
                       allocator_from_garbage_collected_(std::move(allocator_from_garbage_collected))
             {
-
             }
 
             void SimpleMemoryManagement::Init() {

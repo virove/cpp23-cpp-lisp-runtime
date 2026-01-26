@@ -1,12 +1,13 @@
 #include <stdexcept>
 
 #include "simple_cell_factory.h"
+#include "mem/memory_management.h"
 
-lisp_runtime::SimpleCellFactory::SimpleCellFactory(std::unique_ptr<foundation::mem::mgr::AllocOperation> alloc_operation,
+lisp_runtime::SimpleCellFactory::SimpleCellFactory(std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management,
                                                     std::shared_ptr<foundation::AtomFactory> atom_factory,
                                                     std::shared_ptr<foundation::Defines> runtime_defines)
 
-        : alloc_operation_(std::move(alloc_operation)),
+        : memory_management_(std::move(memory_management)),
           atom_factory_(std::move(atom_factory)),
         runtime_defines_(std::move(runtime_defines))
 {
@@ -16,7 +17,7 @@ lisp_runtime::SimpleCellFactory::~SimpleCellFactory()  = default;
 
 foundation::mem::CellList *
 lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, foundation::mem::Cell *tail) {
-    auto an_optional_cell = alloc_operation_->Allocate();
+    auto an_optional_cell = memory_management_->Allocate();
     if(!an_optional_cell.has_value()){
         throw MemoryAllocationNoMemoryError("Failed to allocate memory");
     }
@@ -25,7 +26,7 @@ lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, fou
 }
 
 const foundation::mem::Cell *lisp_runtime::SimpleCellFactory::CreateNumber(int number) {
-    auto allocated_memory = alloc_operation_->Allocate();
+    auto allocated_memory = memory_management_->Allocate();
 
     if(allocated_memory.has_value()){
         return new(allocated_memory.value()) foundation::mem::CellNumber(number);

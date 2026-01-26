@@ -8,6 +8,9 @@ add_executable(UnitTests
         mocks/alloc_operation_mock.h
         mocks/memory_management_mock.h
         mocks/garbage_collector_acceptor_mock.h
+        foundation_test.cpp
+        mocks/atom_factory_mock.h
+        mocks/foundation_mock.h
 )
 
 target_link_libraries(UnitTests

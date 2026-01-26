@@ -18,6 +18,7 @@ namespace foundation {
             public:
                 virtual ~AllocOperation() = default;
                 virtual void Init() = 0;
+                virtual void Shutdown() = 0;
                 virtual std::optional<foundation::mem::Cell*>  Allocate() = 0;
             };
         } // mgr
