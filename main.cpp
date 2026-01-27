@@ -46,6 +46,7 @@ int main(){
                 di::bind<lisp_runtime::CellFactory>().to<lisp_runtime::SimpleCellFactory>(),
                 di::bind<foundation::AtomFactory>().in(di::singleton).to<foundation::AtomFactoryImpl>(),
                 di::bind<foundation::mem::mgr::AllocatorFromArena>,
+                di::bind<foundation::Foundation>().in(di::singleton).to<foundation::FoundationImpl>(),
                 di::bind<foundation::mem::mgr::MemoryManagement>().in(di::singleton).to<foundation::mem::mgr::SimpleMemoryManagement>()
         );
 

@@ -17,17 +17,16 @@ namespace di = boost::di;
 
 
 TEST(SimpleCellFactoryTest, create_number_cell) {
-    auto* alloc_operation_mock = new AllocOperationMock();
+    auto* management_mock = new MemoryManagementMock();
 
     auto injector = di::make_injector(
-            di::bind<foundation::mem::mgr::AllocOperation>().to([alloc_operation_mock](){ return  std::unique_ptr<foundation::mem::mgr::AllocOperation>{alloc_operation_mock}; }),
-            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>(),
-            di::bind<foundation::mem::mgr::MemoryManagement>().to<MemoryManagementMock>()
+            di::bind<foundation::mem::mgr::MemoryManagement>().to([management_mock](){ return  std::shared_ptr<foundation::mem::mgr::MemoryManagement>{management_mock}; }),
+            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;
 
-    EXPECT_CALL(*alloc_operation_mock, Allocate())
+    EXPECT_CALL(*management_mock, Allocate())
     .WillOnce(Return(allocated_cell.get() ));
 
     auto cell_factory = injector.create<std::unique_ptr<lisp_runtime::SimpleCellFactory>>();
@@ -40,18 +39,17 @@ TEST(SimpleCellFactoryTest, create_number_cell) {
 }
 
 TEST(SimpleCellFactoryTest, create_list_cell) {
-    auto* alloc_operation_mock = new AllocOperationMock();
+    auto* management_mock = new MemoryManagementMock();
 
     auto injector = di::make_injector(
-            di::bind<foundation::mem::mgr::AllocOperation>().to([alloc_operation_mock](){ return  std::unique_ptr<foundation::mem::mgr::AllocOperation>{alloc_operation_mock}; }),
-            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>(),
-            di::bind<foundation::mem::mgr::MemoryManagement>().to<MemoryManagementMock>()
+            di::bind<foundation::mem::mgr::MemoryManagement>().to([management_mock](){ return  std::shared_ptr<foundation::mem::mgr::MemoryManagement>{management_mock}; }),
+            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;
     auto allocated_cell2 = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;
 
-    EXPECT_CALL(*alloc_operation_mock, Allocate()).Times(2)
+    EXPECT_CALL(*management_mock, Allocate()).Times(2)
             .WillOnce(Return(allocated_cell.get()))
             .WillOnce(Return(allocated_cell2.get() )
             );
