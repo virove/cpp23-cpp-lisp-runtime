@@ -4,14 +4,15 @@
 #include <memory>
 #include "lisp_runtime.h"
 #include "defines.h"
+#include "foundation_impl.h"
 
 namespace app{
 
     class App final {
     public:
         explicit App(std::unique_ptr<lisp_runtime::LispRuntime> lisp_runtime,
-                     std::shared_ptr<foundation::Defines> runtime_defines)
-        : lisp_runtime_{std::move(lisp_runtime)}, defines_{std::move(runtime_defines)}
+                     std::unique_ptr<foundation::Foundation> foundation)
+        : lisp_runtime_{std::move(lisp_runtime)}, foundation_{std::move(foundation)}
         {}
 
         virtual ~App() = default;
@@ -20,8 +21,8 @@ namespace app{
         void Run();
         void Shutdown() ;
     private:
+        std::unique_ptr<foundation::Foundation> foundation_;
         std::unique_ptr<lisp_runtime::LispRuntime> lisp_runtime_;
-        std::shared_ptr<foundation::Defines> defines_;
     };
 
 } // namespace app

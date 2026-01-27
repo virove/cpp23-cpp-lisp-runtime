@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "allocator_from_arena.h"
 #include "mem/free_node.h"
 
@@ -12,6 +13,9 @@ namespace foundation {
             }
 
             void AllocatorFromArena::Init() {
+                if(number_of_preallocated_nodes_== 0){
+                    throw std::runtime_error("AllocatorFromArena is not configured with  arena size");
+                }
                 allocated_memory_ = std::make_unique<foundation::mem::Cell[]>(number_of_preallocated_nodes_);
             }
 

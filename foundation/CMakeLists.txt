@@ -16,10 +16,14 @@ add_library(foundation STATIC
         mem/simple_memory_management.h
         mem/simple_memory_management.cpp
         mem/memory_management.h
+        foundation_impl.cpp
+        foundation_impl.h
+        foundation.h
 )
 
 
 target_include_directories(foundation
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${boost_di_SOURCE_DIR}/include/
 )

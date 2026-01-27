@@ -20,6 +20,10 @@ namespace foundation::mem {
                                        std::unique_ptr<AllocatorFromGarbageCollected> allocator_from_garbage_collected);
 
                 void Init()override;
+
+                void Shutdown() override {
+                }
+
                 std::optional<foundation::mem::Cell*>   Allocate() override;
                 void ReturnCellToPool(foundation::mem::Cell* node) override;
 
