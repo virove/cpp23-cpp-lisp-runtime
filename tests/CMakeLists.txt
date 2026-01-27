@@ -11,6 +11,8 @@ add_executable(UnitTests
         foundation_test.cpp
         mocks/atom_factory_mock.h
         mocks/foundation_mock.h
+        cell_adaptor_test.cpp
+        parser_test.cpp
 )
 
 target_link_libraries(UnitTests
@@ -23,9 +25,10 @@ target_link_libraries(UnitTests
         GTest::gtest_main
 #        di
 )
-
+message(${boost_di_SOURCE_DIR}/extension/include/)
 target_include_directories(UnitTests PRIVATE
         ${boost_di_SOURCE_DIR}/include/
+        ${boost_di_SOURCE_DIR}/extension/include/
 )
 
 include(GoogleTest)
