@@ -13,6 +13,10 @@ namespace foundation {
             class AllocatorFromGarbageCollected : public foundation::mem::mgr::AllocOperation, public foundation::mem::mgr::FreeNode{
             public:
                 void Init() override{};
+
+                void Shutdown() override {
+                }
+
                 std::optional<foundation::mem::Cell*> Allocate() override;
                 void ReturnCellToPool(foundation::mem::Cell* node) override;
 
