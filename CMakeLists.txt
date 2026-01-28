@@ -32,6 +32,7 @@ add_executable( cpp23-cpp-lisp-runtime
 
 target_include_directories(cpp23-cpp-lisp-runtime PRIVATE
         ${boost_di_SOURCE_DIR}/include/
+        ${boost_di_SOURCE_DIR}/extension/include/
 )
 
 target_link_libraries(cpp23-cpp-lisp-runtime

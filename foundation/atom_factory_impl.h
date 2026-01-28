@@ -19,6 +19,9 @@ namespace foundation {
         {
         }
 
+        ~AtomFactoryImpl() override {
+        }
+
         void Init() override {
             GetOrCreate("ATOM_NAME");
             GetOrCreate("NIL");

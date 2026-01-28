@@ -7,6 +7,9 @@ add_library(runtime STATIC
         simple_lisp_runtime.h
         simple_cell_factory.cpp
         simple_cell_factory.h
+        cell_adaptor.h
+        parser/parser.h
+        parser/stream.h
 )
 
 

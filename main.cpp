@@ -12,31 +12,6 @@
 static const int kPreallocatedMemory_CellNumber = 1024*300;
 namespace di = boost::di;
 
-class AllocOperationStub : public foundation::mem::mgr::AllocOperation{
-public:
-    ~AllocOperationStub() override= default;
-
-private:
-    void Init() override {}
-
-    std::optional<foundation::mem::Cell*>  Allocate() override {
-        return nullptr;
-    }
-};
-
-class MemoryManagementStub : public foundation::mem::mgr::SimpleMemoryManagement{
-public:
-    ~MemoryManagementStub() override = default;
-
-private:
-    void Init() override {
-    }
-
-    std::optional<foundation::mem::Cell*>  Allocate() override {
-        return nullptr;
-    }
-};
-
 int main(){
     std::unique_ptr<app::App> app;
 
