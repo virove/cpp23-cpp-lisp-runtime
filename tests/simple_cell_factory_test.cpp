@@ -8,6 +8,8 @@
 #include "simple_cell_factory.h"
 #include "atom_factory_impl.h"
 #include "mocks/memory_management_mock.h"
+#include "mocks/atom_factory_mock.h"
+#include "boost/di/extension/scopes/shared.hpp"
 
 using ::testing::AtLeast;
 using ::testing::Return;
@@ -21,7 +23,8 @@ TEST(SimpleCellFactoryTest, create_number_cell) {
 
     auto injector = di::make_injector(
             di::bind<foundation::mem::mgr::MemoryManagement>().to([management_mock](){ return  std::shared_ptr<foundation::mem::mgr::MemoryManagement>{management_mock}; }),
-            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>()
+            di::bind<foundation::AtomFactory>().to<AtomFactoryMock>().in(di::extension::shared),
+            di::bind<lisp_runtime::CellFactory>().to<lisp_runtime::SimpleCellFactory>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;
@@ -29,7 +32,7 @@ TEST(SimpleCellFactoryTest, create_number_cell) {
     EXPECT_CALL(*management_mock, Allocate())
     .WillOnce(Return(allocated_cell.get() ));
 
-    auto cell_factory = injector.create<std::unique_ptr<lisp_runtime::SimpleCellFactory>>();
+    auto cell_factory = injector.create<std::unique_ptr<lisp_runtime::CellFactory>>();
 
     const foundation::mem::Cell*   cell = cell_factory->CreateNumber(1) ;
 
@@ -43,7 +46,8 @@ TEST(SimpleCellFactoryTest, create_list_cell) {
 
     auto injector = di::make_injector(
             di::bind<foundation::mem::mgr::MemoryManagement>().to([management_mock](){ return  std::shared_ptr<foundation::mem::mgr::MemoryManagement>{management_mock}; }),
-            di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>()
+            di::bind<foundation::AtomFactory>().to<AtomFactoryMock>().in(di::extension::shared),
+            di::bind<lisp_runtime::CellFactory>().to<lisp_runtime::SimpleCellFactory>()
     );
 
     auto allocated_cell = std::make_unique<foundation::mem::Cell>(foundation::mem::Cell::Type::NO_TYPE_SPECIFIED) ;

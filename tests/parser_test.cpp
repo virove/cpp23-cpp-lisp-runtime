@@ -18,6 +18,8 @@
 #include "simple_cell_factory.h"
 #include "atom_factory_impl.h"
 #include "foundation_impl.h"
+#include "utilities/utilities.h"
+
 
 namespace di = boost::di;
 
@@ -61,11 +63,15 @@ namespace {
         }
 
         auto CreateParser(){
-            return std::make_unique<lisp_runtime::Parser< Std_StringStreamType>>(cell_factory_.get()) ;
+            return std::make_unique< lisp_runtime::Parser<  Std_StringStreamType> >(cell_factory_.get()) ;
         }
 
         lisp_runtime::CellFactory* CellFactory() const {
             return cell_factory_.get();
+        }
+
+        const std::shared_ptr<foundation::AtomFactory> &GetAtomFactory() const {
+            return atom_factory_;
         }
 
     private:
@@ -81,8 +87,8 @@ namespace {
 TEST(ParserTest, readSymbol) {
     TestContext wrapper;
 
-    std::istringstream stream("Aa123");
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("Aa123");
 
     auto parser =   wrapper.CreateParser();
 
@@ -97,8 +103,8 @@ TEST(ParserTest, readSymbol) {
 TEST(ParserTest, readNumber) {
     TestContext wrapper;
 
-    std::istringstream stream("1234");
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("1234");
 
     auto parser =   wrapper.CreateParser();
     auto result = parser->Parse(&stream1);
@@ -111,8 +117,8 @@ TEST(ParserTest, readNumber) {
 TEST(ParserTest, readList1) {
     TestContext wrapper;
 
-    std::istringstream stream("( abc )");
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("( abc )");
 
     auto parser =   wrapper.CreateParser();
     auto result = parser->Parse(&stream1);
@@ -126,8 +132,8 @@ TEST(ParserTest, readList1) {
 TEST(ParserTest, readListNestedNIL) {
     TestContext wrapper;
 
-    std::istringstream stream( "( () )");
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("( () )");
 
     auto parser =   wrapper.CreateParser();
     auto result = parser->Parse(&stream1);
@@ -148,7 +154,7 @@ TEST(ParserTest, readList) {
     TestContext wrapper;
 
     std::istringstream stream( "( abc 1234 )");
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("( abc 1234 )");
 
     auto parser =   wrapper.CreateParser();
     auto result = parser->Parse(&stream1);
@@ -162,14 +168,12 @@ TEST(ParserTest, readList) {
     EXPECT_EQ(second_item->number_, 1234);
 }
 
-
-
 TEST(ParserTest, readbadFormat2) {
     TestContext wrapper;
 
     std::string list = "a)";
     std::istringstream stream(list);
-    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(&stream);
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1("a)");
 
     auto parser =   wrapper.CreateParser();
     auto result = parser->Parse(&stream1);
@@ -177,3 +181,31 @@ TEST(ParserTest, readbadFormat2) {
     EXPECT_EQ(result.GetHead()->GetType(),foundation::mem::Cell::Type::AtomType );
     EXPECT_EQ(result.GetHead()->atom_, wrapper.CellFactory()->GetOrCreate("a")->atom_);
 }
+
+TEST(ParserTest, readComplexList) {
+    TestContext wrapper;
+
+    std::string nested_list = "((((a (b (c d) e) f) g) h ((i (j) k) 1) m) n)";
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(nested_list);
+
+    auto parser =   wrapper.CreateParser();
+    auto result = parser->Parse(&stream1);
+
+    const auto& string_result = lisp_runtime::utilities::to_str(*wrapper.GetAtomFactory(),  result)  ;
+    EXPECT_EQ(nested_list, string_result);
+}
+
+
+TEST(ParserTest, readbadFormat) {
+    TestContext wrapper;
+
+    std::string list = "( a";
+
+    lisp_runtime::Stream<TestContext::Std_StringStreamType> stream1(list);
+
+    auto parser =   wrapper.CreateParser();
+
+    EXPECT_THROW(parser->Parse(&stream1),std::runtime_error);
+}
+

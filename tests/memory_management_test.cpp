@@ -240,7 +240,7 @@ TEST(MemoryManagementTest, allocator_from_arena_mark_all_free) {
 
 /***
  *  Precondition:
- *       Current state: allocation from arena, number of available cell is 4
+ *       Current state: allocation from arena, number of available cell_ is 4
  *
  *  1. make first 3 allocations,
  *  2. 4th allocation fails
@@ -280,7 +280,7 @@ TEST(MemoryManagementIntegrationTest, AllocatorFromArena_garbage_collection_no_f
 
 /***
  *  Precondition:
- *       Current state: allocation from arena, number of available cell is 4
+ *       Current state: allocation from arena, number of available cell_ is 4
  *
  *  1. make first 4 allocations,
  *  2. 4th allocation fails

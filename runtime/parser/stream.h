@@ -9,7 +9,7 @@ namespace lisp_runtime {
     template <typename StdStream>
     class Stream{
     public:
-        explicit  Stream(StdStream* stdStream) : std_stream_{  stdStream }
+        explicit  Stream(const std::string& param) : std_stream_{  param }
         {};
 
         unsigned char  get();
@@ -17,7 +17,7 @@ namespace lisp_runtime {
         void putback(unsigned char);
 
         [[nodiscard]] bool eof()const{
-            bool stream_eof = std_stream_->eof();
+            bool stream_eof = std_stream_.eof();
             bool buffer_empty = buffer.empty();
 
             return stream_eof
@@ -27,7 +27,7 @@ namespace lisp_runtime {
     private:
         using Buffer = std::list<unsigned char>;
         Buffer buffer;
-        StdStream* std_stream_;
+        StdStream std_stream_;
     };
 
     template<typename StdStream>
@@ -44,9 +44,10 @@ namespace lisp_runtime {
             return ch;
         }
         else {
-            return std_stream_->get();
+            return std_stream_.get();
         };
     }
+
 
 } // lisp_runtime  
 
