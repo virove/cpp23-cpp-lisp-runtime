@@ -5,7 +5,7 @@
 namespace app{
 
 void App::Run() {
-    lisp_runtime_->Eval({},{});
+    lisp_runtime_->Eval({   foundation::Defines::NIL()},{ foundation::Defines::NIL()} );
 }
 
 void App::Init() {

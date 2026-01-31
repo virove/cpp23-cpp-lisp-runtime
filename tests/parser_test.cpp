@@ -49,8 +49,7 @@ namespace {
         using Std_StringStreamType = decltype(std::istringstream("Aa123"));
 
         TestContext()
-                        :
-                        injector{make_test_injector()}
+                        : injector{make_test_injector()}
 
         {
             foundation_ =  injector.create<std::shared_ptr<foundation::Foundation>>();
