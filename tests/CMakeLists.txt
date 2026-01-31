@@ -14,6 +14,8 @@ add_executable(UnitTests
         cell_adaptor_test.cpp
         parser_test.cpp
         utility_to_string_test.cpp
+        basic_objects_eval_test.cpp
+        base_test_context.h
 )
 
 target_link_libraries(UnitTests

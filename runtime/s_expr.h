@@ -1,9 +1,10 @@
 #ifndef S_EXPR_H
 #define S_EXPR_H
 
+#include "cell_adaptor.h"
+
 namespace lisp_runtime{
-    class SExpr {
-    };
+    using SExpr = lisp_runtime::CellAdaptor;
 }
 
 
