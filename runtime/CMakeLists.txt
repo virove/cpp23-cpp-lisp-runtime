@@ -10,6 +10,8 @@ add_library(runtime STATIC
         cell_adaptor.h
         parser/parser.h
         parser/stream.h
+        utilities/utilities.h
+        utilities/utilities_string.cpp
 )
 
 

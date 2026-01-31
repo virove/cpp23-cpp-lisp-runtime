@@ -24,9 +24,14 @@ namespace lisp_runtime {
 
         ~SimpleCellFactory() override;
 
-        [[nodiscard]]const foundation::mem::Cell *CreateNumber(int number) override;
+        [[nodiscard]]    foundation::mem::Cell *CreateNumber(int number) override;
+
+        foundation::mem::CellList *CreateListCell() override;
+
         [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) override ;
+
         [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) override;
+
         [[nodiscard]]    foundation::mem::Cell *GetOrCreate(const std::string &atomname) override;
 
     private:

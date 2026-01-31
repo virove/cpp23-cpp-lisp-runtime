@@ -15,6 +15,16 @@ lisp_runtime::SimpleCellFactory::SimpleCellFactory(std::shared_ptr<foundation::m
 
 lisp_runtime::SimpleCellFactory::~SimpleCellFactory()  = default;
 
+
+foundation::mem::CellList *lisp_runtime::SimpleCellFactory::CreateListCell() {
+    auto an_optional_cell = memory_management_->Allocate();
+    if(!an_optional_cell.has_value()){
+        throw MemoryAllocationNoMemoryError("Failed to allocate memory");
+    }
+
+    return  new (an_optional_cell.value()) foundation::mem::CellList(foundation::Defines::NIL(), foundation::Defines::NIL()) ;
+}
+
 foundation::mem::CellList *
 lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, foundation::mem::Cell *tail) {
     auto an_optional_cell = memory_management_->Allocate();
@@ -25,7 +35,7 @@ lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, fou
     return  new (an_optional_cell.value()) foundation::mem::CellList(head, tail) ;
 }
 
-const foundation::mem::Cell *lisp_runtime::SimpleCellFactory::CreateNumber(int number) {
+foundation::mem::Cell *lisp_runtime::SimpleCellFactory::CreateNumber(int number) {
     auto allocated_memory = memory_management_->Allocate();
 
     if(allocated_memory.has_value()){
@@ -47,6 +57,8 @@ foundation::mem::Cell *lisp_runtime::SimpleCellFactory::GetOrCreate(const std::s
     }
     return an_optional_cell.value();
 }
+
+
 
 
 
