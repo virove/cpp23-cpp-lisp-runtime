@@ -7,6 +7,10 @@
 #include "simple_cell_factory.h"
 #include "atom_factory_impl.h"
 #include "mem/simple_memory_management.h"
+#include "runtime_impl.h"
+#include "foundation_impl.h"
+#include "forms/forms_impl.h"
+#include "functions/functions_impl.h"
 
 
 static const int kPreallocatedMemory_CellNumber = 1024*300;
@@ -22,10 +26,11 @@ int main(){
                 di::bind<foundation::AtomFactory>().in(di::singleton).to<foundation::AtomFactoryImpl>(),
                 di::bind<foundation::mem::mgr::AllocatorFromArena>,
                 di::bind<foundation::Foundation>().in(di::singleton).to<foundation::FoundationImpl>(),
-                di::bind<foundation::mem::mgr::MemoryManagement>().in(di::singleton).to<foundation::mem::mgr::SimpleMemoryManagement>()
+                di::bind<lisp_runtime::Runtime>().in(di::singleton).to<lisp_runtime::RuntimeImpl>(),
+                di::bind<foundation::mem::mgr::MemoryManagement>().in(di::singleton).to<foundation::mem::mgr::SimpleMemoryManagement>(),
+                di::bind<lisp_runtime::forms::Forms>().to<lisp_runtime::forms::FormsImpl>().in(di::singleton),
+                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::singleton)
         );
-
-
 
     app = injector.create<std::unique_ptr<app::App>>();
 

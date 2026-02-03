@@ -10,9 +10,12 @@
 #include "atom_factory_impl.h"
 #include "foundation_impl.h"
 #include "simple_lisp_runtime.h"
+#include "forms/forms_impl.h"
+#include "functions/functions_impl.h"
 
 #include <memory>
-#include <boost/di.hpp>
+#include "simple_eval_test_context.h"
+#include "runtime_impl.h"
 
 namespace di = boost::di;
 
@@ -28,30 +31,32 @@ namespace {
                 di::bind<foundation::AtomFactory>().to<foundation::AtomFactoryImpl>().in(di::extension::shared),
                 di::bind < foundation::mem::mgr::AllocatorFromArena > ,
                 di::bind<foundation::Foundation>().to<foundation::FoundationImpl>().in(di::extension::shared),
-                di::bind<foundation::mem::mgr::MemoryManagement>().to<foundation::mem::mgr::SimpleMemoryManagement>(),
-                di::bind < foundation::Defines >.in(di::extension::shared)
-
+                di::bind<foundation::mem::mgr::MemoryManagement>().to<foundation::mem::mgr::SimpleMemoryManagement>().in(di::extension::shared),
+                di::bind<lisp_runtime::Runtime>().in(di::extension::shared).to<lisp_runtime::RuntimeImpl>(),
+                di::bind < foundation::Defines >.in(di::extension::shared),
+                di::bind<lisp_runtime::forms::Forms>().to<lisp_runtime::forms::FormsImpl>().in(di::extension::shared),
+                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::extension::shared)
         );
     }
 }
 
-class SimpleEvalTestContext : public test_support::BaseTestContext<make_test_injector>{
-public:
-    explicit SimpleEvalTestContext() {
-        lisp_runtime_ = injector.template create<std::shared_ptr<lisp_runtime::LispRuntime>>();
-    }
+using EvalTestContext = SimpleEvalTestContext<make_test_injector>;
+//class EvalTestContext : public test_support::BaseTestContext<make_test_injector>{
+//public:
+//    explicit EvalTestContext() {
+//        lisp_runtime_ = injector.template create<std::shared_ptr<lisp_runtime::LispRuntime>>();
+//    }
+//
+//    std::shared_ptr<lisp_runtime::LispRuntime> GetSimpleLispRuntime(){
+//        return lisp_runtime_;
+//    }
+//
+//    std::shared_ptr<lisp_runtime::LispRuntime> lisp_runtime_;
+//};
 
-    std::shared_ptr<lisp_runtime::LispRuntime> GetSimpleLispRuntime(){
-        return lisp_runtime_;
-    }
 
-    std::shared_ptr<lisp_runtime::LispRuntime> lisp_runtime_;
-};
-
-
-TEST(BasicObjectEvalTest, EvalNumber) {
-    SimpleEvalTestContext simple_eval_test_context;
-
+TEST(BasicObjectEvalTest, eval_number) {
+    EvalTestContext simple_eval_test_context;
 
     auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
     auto cell_factory = simple_eval_test_context.CellFactory();
@@ -59,9 +64,34 @@ TEST(BasicObjectEvalTest, EvalNumber) {
     auto argument = cell_factory->CreateNumber(123);
     auto result = lisp_runtime->Eval({argument},  {foundation::Defines::NIL() } );
 
-
     const auto& expected = cell_factory->CreateNumber(123);
     EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::NumberType);
     EXPECT_EQ(result.GetHead()->number_ , expected->number_);
-
 }
+
+
+TEST(BasicObjectEvalTest, eval_nil) {
+    EvalTestContext simple_eval_test_context;
+
+    auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
+    auto cell_factory = simple_eval_test_context.CellFactory();
+
+    auto result = lisp_runtime->Eval({foundation::Defines::NIL()},  {foundation::Defines::NIL() } );
+
+    EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::AtomType);
+    EXPECT_EQ(result.GetThisCell(), foundation::Defines::NIL());
+}
+
+
+TEST(BasicObjectEvalTest, eval_T) {
+    EvalTestContext simple_eval_test_context;
+
+    auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
+    auto cell_factory = simple_eval_test_context.CellFactory();
+
+    auto result = lisp_runtime->Eval({foundation::Defines::T()},  {foundation::Defines::NIL() } );
+
+    EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::AtomType);
+    EXPECT_EQ(result.GetThisCell(), foundation::Defines::T());
+}
+

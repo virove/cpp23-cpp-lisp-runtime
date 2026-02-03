@@ -10,10 +10,12 @@
 
 namespace test_support{
 
+    using Std_StringStreamType = decltype(std::istringstream(""));
+
     template <auto InjectorFactoryFunction>
     class BaseTestContext {
         public:
-        using Std_StringStreamType = decltype(std::istringstream(""));
+
 
         decltype(auto) ExecuteInjectorFactoryFunction() {
             return InjectorFactoryFunction();

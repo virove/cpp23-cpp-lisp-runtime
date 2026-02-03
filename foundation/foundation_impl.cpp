@@ -7,8 +7,8 @@ namespace foundation {
 
         atom_factory_->Init();
 
-        auto nil = atom_factory_->GetOrCreate("NIL");
-        auto t = atom_factory_->GetOrCreate("T");
+        auto nil = atom_factory_->GetOrCreate("nil");
+        auto t = atom_factory_->GetOrCreate("t");
 
         if(!(nil.has_value() && t.has_value())){
             throw std::runtime_error("Failed to init runtime: allocate memory error");

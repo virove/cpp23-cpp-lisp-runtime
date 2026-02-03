@@ -104,9 +104,9 @@ TEST(AtomFactoryTest, query_atom_property_atom) {
     auto test_property = atom_factory->GetOrCreate("test_property_name");
 
     auto atom_test = atom_factory->GetOrCreate("test").value()->atom_;
-    atom_factory->SetProperty(atom_test, test_property.value()->atom_, std::string("test_property_value"));
+    atom_factory->SetPropertyString(atom_test, test_property.value()->atom_, std::string("test_property_value"));
     auto atom_test_property_value = atom_factory->GetOrCreate("test_property_name").value()->atom_;
-    auto actual_property = atom_factory->GetProperty<std::string>(atom_test, atom_test_property_value);
+    auto actual_property = atom_factory->GetPropertyString(atom_test, atom_test_property_value);
 
     EXPECT_TRUE(actual_property.has_value());
     EXPECT_EQ(actual_property.value(), "test_property_value");
@@ -132,14 +132,14 @@ TEST(AtomFactoryTest, query_atom_property_atom_overwrite) {
     auto test_property = atom_factory->GetOrCreate("test_property_name");
 
     auto atom_test = atom_factory->GetOrCreate("test").value()->atom_;
-    atom_factory->SetProperty(atom_test, test_property.value()->atom_, std::string("test_property_value"));
+    atom_factory->SetPropertyString(atom_test, test_property.value()->atom_, std::string("test_property_value"));
     auto atom_test_property_value = atom_factory->GetOrCreate("test_property_name").value()->atom_;
-    auto actual_property = atom_factory->GetProperty<std::string>(atom_test, atom_test_property_value);
+    auto actual_property = atom_factory->GetPropertyString(atom_test, atom_test_property_value);
     EXPECT_TRUE(actual_property.has_value());
     EXPECT_EQ(actual_property.value(), "test_property_value");
 
-    atom_factory->SetProperty(atom_test, test_property.value()->atom_, std::string("NEW_test_property_value"));
-    auto actual_property2 = atom_factory->GetProperty<std::string>(atom_test, atom_test_property_value);
+    atom_factory->SetPropertyString(atom_test, test_property.value()->atom_, std::string("NEW_test_property_value"));
+    auto actual_property2 = atom_factory->GetPropertyString(atom_test, atom_test_property_value);
     EXPECT_TRUE(actual_property2.has_value());
     EXPECT_EQ(actual_property2.value(), "NEW_test_property_value");
 }
@@ -163,15 +163,15 @@ TEST(AtomFactoryTest, query_atom_property_atom_failed) {
     EXPECT_EQ(atom_factory->GetOrCreate("test"), atom_factory->GetOrCreate("test"));
     auto test_property = atom_factory->GetOrCreate("test_property_name");
 
-    atom_factory->SetProperty( atom_factory->GetOrCreate("test").value()->atom_, test_property.value()->atom_, std::string("test_property_value"));
+    atom_factory->SetPropertyString( atom_factory->GetOrCreate("test").value()->atom_, test_property.value()->atom_, std::string("test_property_value"));
     // 1. no such atom 123456789
 
-    auto actual_property = atom_factory->GetProperty<std::string>(123456789,atom_factory->GetOrCreate("test_property_name").value()->atom_);
+    auto actual_property = atom_factory->GetPropertyString(123456789,atom_factory->GetOrCreate("test_property_name").value()->atom_);
     EXPECT_FALSE(actual_property.has_value());
 
     // 2. no such property
 
-    auto actual_property2 = atom_factory->GetProperty<std::string>(atom_factory->GetOrCreate("test").value()->atom_,atom_factory->GetOrCreate("NO_SUCH__property").value()->atom_);
+    auto actual_property2 = atom_factory->GetPropertyString(atom_factory->GetOrCreate("test").value()->atom_,atom_factory->GetOrCreate("NO_SUCH__property").value()->atom_);
     EXPECT_FALSE(actual_property2.has_value());
 }
 

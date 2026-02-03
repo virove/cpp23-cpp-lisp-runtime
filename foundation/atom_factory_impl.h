@@ -14,22 +14,24 @@ namespace foundation {
 
     class AtomFactoryImpl : public AtomFactory{
     public:
+
         explicit AtomFactoryImpl(std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management)
         : memory_management_{std::move(memory_management)}
         {
         }
 
-        ~AtomFactoryImpl() override {
-        }
-
         void Init() override {
             GetOrCreate("ATOM_NAME");
-            GetOrCreate("NIL");
-            GetOrCreate("T");
+            GetOrCreate("nil");
+            GetOrCreate("t");
         }
 
         void Shutdown() override {
         }
+
+        std::optional<foundation::mem::Cell*> GetProperty(foundation::ATOM atom,foundation::ATOM property_name)const override{
+            return GetPropertyGeneric<foundation::mem::Cell*>(atom, property_name );
+         }
 
         std::optional<foundation::mem::Cell*> GetOrCreate(const std::string& atomname) override {
             std::lock_guard<std::mutex> _lock(mutex_);
@@ -52,11 +54,13 @@ namespace foundation {
             }
         }
 
-        template<typename T>
-        std::optional<T> GetProperty(foundation::ATOM,foundation::ATOM property_name)const;
 
         template<typename T>
-        void SetProperty(foundation::ATOM, foundation::ATOM name, T&& value);
+        std::optional<T> GetPropertyGeneric(foundation::ATOM,foundation::ATOM property_name)const;
+
+        template<typename T>
+        void SetGenericProperty(foundation::ATOM, foundation::ATOM name, T&& value);
+
 
         std::optional<std::string>  GetAtomName(foundation::ATOM atom) const override{
         {
@@ -74,6 +78,29 @@ namespace foundation {
             }
         }
     }
+        using FuncType = foundation::mem::Cell* (*)( const foundation::mem::Cell*);
+
+        std::optional<FuncType>
+        GetFunctionProperty(foundation::ATOM atom, foundation::ATOM property_name) const override {
+            return GetPropertyGeneric<FuncType>(atom, property_name );
+        }
+
+        std::optional<std::string> GetPropertyString(foundation::ATOM atom,foundation::ATOM property_name)const override{
+             return GetPropertyGeneric<std::string>(atom, property_name );
+        }
+
+        void SetPropertyString(foundation::ATOM atom, foundation::ATOM name, const std::string& value) override {
+            SetGenericProperty(atom, name, value);
+        }
+
+        void SetProperty(foundation::ATOM atom, foundation::ATOM name, foundation::mem::Cell *value) override {
+            SetGenericProperty(atom, name, value);
+        }
+
+        void SetFunctionProperty(foundation::ATOM atom, foundation::ATOM name,
+                                 foundation::mem::Cell* (*fun)(const foundation::mem::Cell*)) override {
+            SetGenericProperty(atom, name, fun);
+        }
 
     private:
         using AtomProperties = std::unordered_map<foundation::ATOM, std::any>;
@@ -90,7 +117,7 @@ namespace foundation {
     };
 
     template<typename T>
-    void AtomFactoryImpl::SetProperty(foundation::ATOM atom, foundation::ATOM property_name, T &&value)  {
+    void AtomFactoryImpl::SetGenericProperty(foundation::ATOM atom, foundation::ATOM property_name, T &&value)  {
         if( auto iter = atom_to_properties_.find(atom) ; iter != atom_to_properties_.end()){
             auto& properties = iter->second;
             T t = value;
@@ -99,7 +126,7 @@ namespace foundation {
     }
 
     template<typename T>
-    std::optional<T>  AtomFactoryImpl::GetProperty(foundation::ATOM atom, foundation::ATOM property_name ) const {
+    std::optional<T>  AtomFactoryImpl::GetPropertyGeneric(foundation::ATOM atom, foundation::ATOM property_name ) const {
         if(auto iter = atom_to_properties_.find(atom); iter == atom_to_properties_.end()){
             return std::nullopt;
         }
@@ -118,7 +145,10 @@ namespace foundation {
                 }
             }
         }
+
     };
+
+
 } // namespace foundation
 
 #endif //ATOM_FACTORY_IMPL_H
