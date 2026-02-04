@@ -12,6 +12,8 @@ public:
     MOCK_METHOD( void, Shutdown,() ,(override));
 
     MOCK_METHOD( std::shared_ptr<lisp_runtime::LispRuntime>, GetLispRuntime,() ,(const override));
+
+    MOCK_METHOD(lisp_runtime::CellFactory *,CellFactory,(), (const override));
 };
 
 #endif //RUNTIMEMOCK_H

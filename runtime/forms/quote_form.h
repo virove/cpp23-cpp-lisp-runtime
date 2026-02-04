@@ -7,6 +7,13 @@ namespace lisp_runtime::forms {
 
     class QuoteForm : public Form{
     public:
+        QuoteForm(std::shared_ptr<foundation::Foundation> foundation, CellFactory *cell_factory) : Form(
+                foundation, cell_factory) {}
+
+        void Init() override {}
+
+        void Shutdown() override {}
+
         CellAdaptor Eval(LispRuntime *lisp_runtime, CellAdaptor expression, CellAdaptor context) const override;
 
         [[nodiscard]]

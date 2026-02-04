@@ -28,7 +28,7 @@ namespace lisp_runtime {
 
         foundation::mem::CellList *CreateListCell() override;
 
-        [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head, foundation::mem::Cell*  tail) override ;
+        [[nodiscard]]    foundation::mem::CellList *CreateListCell(const foundation::mem::Cell*  head, const foundation::mem::Cell*  tail) override ;
 
         [[nodiscard]]    foundation::mem::CellList *CreateListCell(foundation::mem::Cell*  head) override;
 

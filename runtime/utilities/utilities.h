@@ -11,6 +11,7 @@
 namespace lisp_runtime::utilities {
 
     std::string to_str(const foundation::AtomFactory& atom_factory, lisp_runtime::CellAdaptor expression);
+    lisp_runtime::CellAdaptor assoc(lisp_runtime::CellAdaptor variable_name, lisp_runtime::CellAdaptor context);
 
 } // namespace lisp_runtime::utilities
 

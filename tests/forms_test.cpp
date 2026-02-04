@@ -17,6 +17,7 @@
 #include "forms/forms_impl.h"
 #include "functions/functions_impl.h"
 #include "simple_eval_test_context.h"
+#include "variables/variables_impl.h"
 
 namespace di = boost::di;
 
@@ -39,7 +40,8 @@ namespace {
                 di::bind<lisp_runtime::Runtime>().in(di::extension::shared).to<lisp_runtime::RuntimeImpl>(),
                 di::bind < foundation::Defines >.in(di::extension::shared),
                 di::bind<lisp_runtime::forms::Forms>().to<lisp_runtime::forms::FormsImpl>().in(di::extension::shared),
-                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::extension::shared)
+                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::extension::shared),
+                di::bind<lisp_runtime::vars::Variables>().to<lisp_runtime::vars::VariablesImpl>().in(di::extension::shared)
         );
     }
 }
@@ -60,4 +62,62 @@ auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
 
     EXPECT_TRUE(result.GetType() == foundation::mem::Cell::Type::NumberType);
     EXPECT_EQ(result.GetThisCell()->number_, 1);
+}
+
+
+TEST(FormTest, form_defun_test) {
+
+    EvalTestContext simple_eval_test_context;
+
+    auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
+
+    auto parser = simple_eval_test_context.CreateParser();
+    {
+        auto *function_definition = "(defun factorial (n)\n"
+                                    "  (if (= n 0)\n"
+                                    "      1\n"
+                                    "      (* n (factorial (- n 1))) ) )";
+
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(function_definition);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_EQ(result.GetThisCell(), simple_eval_test_context.CellFactory()->GetOrCreate("factorial"));
+    }
+}
+
+
+TEST(FormTest, form_if_test) {
+
+    EvalTestContext simple_eval_test_context;
+
+    auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
+
+    auto parser = simple_eval_test_context.CreateParser();
+    {
+        auto *if_forma = "( if (atom t) (quote a) (quote b))";
+
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(if_forma);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_EQ(result.GetThisCell(), simple_eval_test_context.CellFactory()->GetOrCreate("a"));
+    }
+
+    {
+        auto *if_forma = "( if (atom 1) (quote a) (quote b))";
+
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(if_forma);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_EQ(result.GetThisCell(), simple_eval_test_context.CellFactory()->GetOrCreate("b"));
+    }
+
 }

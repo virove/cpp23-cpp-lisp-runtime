@@ -14,6 +14,7 @@
 #include "forms/forms_impl.h"
 #include "functions/functions_impl.h"
 #include "simple_eval_test_context.h"
+#include "variables/variables_impl.h"
 
 namespace di = boost::di;
 
@@ -35,7 +36,8 @@ namespace {
                 di::bind<lisp_runtime::Runtime>().in(di::extension::shared).to<lisp_runtime::RuntimeImpl>(),
                 di::bind < foundation::Defines >.in(di::extension::shared),
                 di::bind<lisp_runtime::forms::Forms>().to<lisp_runtime::forms::FormsImpl>().in(di::extension::shared),
-                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::extension::shared)
+                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::extension::shared),
+                di::bind<lisp_runtime::vars::Variables>().to<lisp_runtime::vars::VariablesImpl>().in(di::extension::shared)
         );
     }
 }

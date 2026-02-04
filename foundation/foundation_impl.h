@@ -22,6 +22,7 @@ namespace foundation {
                    }
         void Init() override;
         void Shutdown() override;
+        std::shared_ptr<AtomFactory> GetAtomFactory() override{ return atom_factory_; }
     private:
         std::shared_ptr<foundation::mem::mgr::MemoryManagement> memory_management_;
         std::shared_ptr<AtomFactory>    atom_factory_;

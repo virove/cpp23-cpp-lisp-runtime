@@ -20,6 +20,7 @@ add_executable(UnitTests
         forms_test.cpp
         mocks/RuntimeMock.h
         simple_eval_test_context.h
+        function_test.cpp
 )
 
 target_link_libraries(UnitTests

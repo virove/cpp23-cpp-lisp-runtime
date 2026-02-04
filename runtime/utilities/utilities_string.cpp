@@ -3,6 +3,7 @@
 #include "mem/cell.h"
 #include "cell_factory.h"
 #include "atom_factory.h"
+#include "defines.h"
 
 namespace lisp_runtime::utilities {
 
@@ -54,4 +55,57 @@ namespace lisp_runtime::utilities {
             throw std::runtime_error("Error in utilities::Utilities::to_str, Node specifies unknown type");
         }
     }
+
+    bool eql(lisp_runtime::CellAdaptor node1 , lisp_runtime::CellAdaptor node2) {
+        if(node1.IsEmpty() && node2.IsEmpty()){
+            return true;
+        } else{
+
+            if(node1.GetHead()->GetType() != node2.GetHead()->GetType()){
+                return false;
+            }
+            else{
+                switch (node1.GetHead()->GetType()) {
+                    case foundation::mem::Cell::Type::AtomType:
+                        return node1.GetHead()->atom_ == node2.GetHead()->atom_;
+                    case foundation::mem::Cell::Type::NumberType:
+                        return node1.GetHead()->number_== node2.GetHead()->number_;
+                    default:
+                        assert(false);
+                }
+            }
+        }
+    }
+
+
+    lisp_runtime::CellAdaptor assoc(lisp_runtime::CellAdaptor variable_name, lisp_runtime::CellAdaptor context){
+        if(context.IsEmpty()){
+            return context;
+        }
+
+        if(context.GetHead()->type_ == foundation::mem::Cell::Type::ListType )
+        {
+            auto pair = context.Car();
+            if(pair.GetHead()->GetType() == foundation::mem::Cell::Type::ListType){
+
+                auto first_pair = context.Car();
+                auto key_of_pair = first_pair.Car();
+
+                if(eql(variable_name, key_of_pair)){
+                    return first_pair;
+                }
+                else{
+                    auto rest = context.Cdr();
+
+                    return assoc(variable_name, rest);
+                }
+            } else{
+                return {foundation::Defines::NIL()};
+            }
+        }
+        else{
+            return {foundation::Defines::NIL()};
+        }
+    }
+
 } // namespace lisp_runtime::utilities

@@ -2,7 +2,8 @@
 
 namespace lisp_runtime::functions {
 
-foundation::mem::Cell* BuiltinAtomPredicate( const foundation::mem::Cell* cell_expression){
+
+foundation::mem::Cell *BuiltinAtomPredicate::operator()(const foundation::mem::Cell *cell_expression) {
     lisp_runtime::CellAdaptor expression{cell_expression};
 
     assert(expression.GetHead()->GetType()==foundation::mem::Cell::Type::ListType);
