@@ -15,10 +15,7 @@ void lisp_runtime::SimpleLispRuntime::Shutdown() {
 }
 
 lisp_runtime::SExpr lisp_runtime::SimpleLispRuntime::Eval(SExpr expression, SExpr context) {
-    DEBUG_OUTPUT(expression, atom_factory_.get());
-//    {
-//        const std::string &debug_output = utilities::to_str(*atom_factory_, expression);
-//        std::cout << "expression << " << "= " << debug_output << std::endl; }
+    DEBUG_OUTPUT(expression, atom_factory_);
 
     if(expression.GetType() == foundation::mem::Cell::Type::NumberType){
         return  expression;
@@ -30,25 +27,44 @@ lisp_runtime::SExpr lisp_runtime::SimpleLispRuntime::Eval(SExpr expression, SExp
             return foundation::Defines::T();
         }
         else{
-            assert(!"Variables are not implemented");
+            auto result = variables_->GetVariableValue(expression, context);
+            if (!result.has_value()) {
+                DEBUG_OUTPUT(context, atom_factory_);
+
+                return foundation::Defines::NIL();
+            } else {
+                return { result.value() };
+            }
         }
     }
     else if(expression.GetType() == foundation::mem::Cell::Type::ListType){
 
         auto form_name = expression.Car();
+        if(form_name.IsAtom()){
+            if(auto form = forms_->FindForm(form_name) ; form.has_value()){
 
-        if(auto form = forms_->FindForm(form_name) ; form.has_value()){
+                return form.value()->Eval(this, expression, context);
+            }
+            else{
+                auto function_name = expression.Car();
 
-            return form.value()->Eval(this, expression, context);
-        }
-        else{
-            auto function_name = expression.Car();
+                auto find_function_result = functions_->FindFunction(function_name);
 
-            auto find_function_result = functions_->FindFunction(function_name);
+                auto function_parameters = expression.Cdr();
 
-            auto function_parameters = expression.Cdr();
+                return EvalFunction( find_function_result,function_name, function_parameters, context);
+            }
+        } else{
+            auto lambda_parameters = expression.Cdr();
+            DEBUG_OUTPUT(lambda_parameters, atom_factory_);
 
-            return EvalFunction( find_function_result,function_name, function_parameters, context);
+            auto lambda_definition = expression.Car();
+            DEBUG_OUTPUT(lambda_definition, atom_factory_);
+
+            const CellAdaptor &evaluated_lambda_arguments =  EvalList(  lambda_parameters, context);
+            DEBUG_OUTPUT(evaluated_lambda_arguments, atom_factory_);
+
+            return Apply(lambda_definition, evaluated_lambda_arguments, context);
         }
     } else
     {
@@ -59,7 +75,29 @@ lisp_runtime::SExpr lisp_runtime::SimpleLispRuntime::Eval(SExpr expression, SExp
 
 
 lisp_runtime::SExpr lisp_runtime::SimpleLispRuntime::Apply(SExpr function, SExpr arguments, SExpr context) {
-    return SExpr(foundation::Defines::NIL());
+
+    if(function.GetHead()->GetType() == foundation::mem::Cell::Type::ListType){
+        auto car_function = function.Car();
+
+        if(car_function.GetHead()->GetType()== foundation::mem::Cell::Type::AtomType
+        && car_function.GetHead()->atom_ == cell_factory_->GetOrCreate("lambda")->atom_){
+            auto caddr_function = function.Cdr().Cdr().Car();
+            DEBUG_OUTPUT(caddr_function,   atom_factory_);
+            auto cadr_function =  function.Cdr().Car();
+            DEBUG_OUTPUT(cadr_function,   atom_factory_);
+            auto new_context = variables_->CreateVariableBinding( cadr_function, arguments, context);
+
+            variables_->SetVariableBinding(new_context);
+            const auto &result = Eval(caddr_function, new_context);
+            variables_->SetVariableBinding(context);
+
+            return result;
+        }
+    }
+    else{
+        throw std::runtime_error("bad function definition");
+    }
+    return foundation::Defines::NIL();
 }
 
 lisp_runtime::SExpr
@@ -76,7 +114,7 @@ lisp_runtime::SimpleLispRuntime::EvalFunction(functions::Functions::FindFunction
         return Apply(*function_definition, evaluated_arguments, context);
     }
     else {
-        auto builtin_function = std::get_if<lisp_runtime::functions::BuiltinFunction>(&find_function_result);
+        auto builtin_function = std::get_if<foundation::Function*>(&find_function_result);
 
         return ApplyBuiltinFunction(*builtin_function, evaluated_arguments);
     }
@@ -102,8 +140,8 @@ lisp_runtime::CellAdaptor lisp_runtime::SimpleLispRuntime::EvalList(  lisp_runti
 }
 
 lisp_runtime::SExpr
-lisp_runtime::SimpleLispRuntime::ApplyBuiltinFunction(lisp_runtime::functions::BuiltinFunction builtin_function, lisp_runtime::CellAdaptor parameters) {
-    return builtin_function(parameters.GetThisCell());
+lisp_runtime::SimpleLispRuntime::ApplyBuiltinFunction(foundation::Function* builtin_function, lisp_runtime::CellAdaptor parameters) {
+    return {builtin_function->operator()( parameters.GetThisCell()) };
 }
 
 

@@ -10,6 +10,7 @@
 #include "functions/builtin_function.h"
 #include "forms/forms.h"
 #include "functions/functions.h"
+#include "variables/variables.h"
 
 namespace lisp_runtime{
 
@@ -18,11 +19,13 @@ namespace lisp_runtime{
         explicit SimpleLispRuntime(std::unique_ptr<lisp_runtime::CellFactory> cell_factory,
                                    std::shared_ptr< foundation::AtomFactory> atom_factory,
                                     std::shared_ptr<lisp_runtime::forms::Forms> forms,
-                                   std::shared_ptr<lisp_runtime::functions::Functions> functions)
+                                   std::shared_ptr<lisp_runtime::functions::Functions> functions,
+                                   std::shared_ptr<lisp_runtime::vars::Variables> variables)
             : cell_factory_{std::move(cell_factory)},
             atom_factory_{std::move(atom_factory)},
               forms_{std::move(forms)},
-              functions_{std::move(functions)}{
+              functions_{std::move(functions)},
+              variables_{variables}{
         }
 
         ~SimpleLispRuntime() override = default;
@@ -41,12 +44,13 @@ namespace lisp_runtime{
 
         lisp_runtime::SExpr EvalFunction(functions::Functions::FindFunctionResult find_function_result, lisp_runtime::CellAdaptor function_name, CellAdaptor parameters, SExpr adaptor);
 
-        lisp_runtime::SExpr ApplyBuiltinFunction(lisp_runtime::functions::BuiltinFunction builtin_function, lisp_runtime::CellAdaptor parameters);
+        lisp_runtime::SExpr ApplyBuiltinFunction(foundation::Function* builtin_function, lisp_runtime::CellAdaptor parameters);
 
         std::unique_ptr<lisp_runtime::CellFactory> cell_factory_;
         std::shared_ptr< foundation::AtomFactory> atom_factory_;
         std::shared_ptr<lisp_runtime::forms::Forms> forms_;
         std::shared_ptr<lisp_runtime::functions::Functions> functions_;
+        std::shared_ptr<lisp_runtime::vars::Variables> variables_;
     };
 
 } // namespace foundation

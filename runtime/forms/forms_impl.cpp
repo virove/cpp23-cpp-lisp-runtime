@@ -4,17 +4,35 @@
 namespace lisp_runtime::forms {
 
         std::optional<const Form *> FormsImpl::FindForm(lisp_runtime::CellAdaptor form_name) const{
+            if(form_name.GetType() != foundation::mem::Cell::Type::AtomType){
+                auto  d = form_name;
+            }
             assert(form_name.GetType() == foundation::mem::Cell::Type::AtomType);
 
-            auto iterator = registered.find(form_name.GetAtom());
+            auto iterator = forms_.find(form_name.GetAtom());
 
-            return iterator == registered.end() ? std::nullopt : std::optional(iterator->second.get() ) ;
+            return iterator == forms_.end() ? std::nullopt : std::optional(iterator->second.get() ) ;
         }
 
-        void FormsImpl::Register(const Form *form) {
-            auto form_name_atom = cell_factory_->GetOrCreate(form->Name())->atom_;
-
-            registered.emplace(form_name_atom, form);
+        void FormsImpl::Register(Form *form) {
+            to_be_registered_.emplace_back(form);
         }
+
+    void FormsImpl::Init() {
+                while (!to_be_registered_.empty()){
+                    auto form = std::move(to_be_registered_.front());
+                    to_be_registered_.pop_front();
+
+                    auto form_name = form->Name();
+                    auto form_name_atom = cell_factory_->GetOrCreate(form_name)->atom_;
+
+                    forms_.emplace(form_name_atom, std::move(form));
+                }
+
+                for (auto& [key, form] : forms_) {
+                    form->Init();
+                }
+    }
+
 
 } // lisp_runtime::forms

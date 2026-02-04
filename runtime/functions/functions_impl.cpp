@@ -21,14 +21,22 @@ namespace lisp_runtime {
 
         }
 
-        void FunctionsImpl::RegisterBuiltinFunction(const std::string &name, BuiltinFunction function) {
-            atom_factory_->SetFunctionProperty(atom_factory_->GetOrCreate(name).value()->atom_, atom_builtin_function_property_,
-                                               lisp_runtime::functions::BuiltinAtomPredicate);
+        void FunctionsImpl::RegisterFunction(foundation::Function* function) {
+            to_be_registered_.emplace_back(function);
         }
 
         void FunctionsImpl::Init() {
             atom_fn_ = cell_factory_->GetOrCreate("fn")->atom_;
             atom_builtin_function_property_ = cell_factory_->GetOrCreate("BUILT_FN")->atom_;
+
+            while (!to_be_registered_.empty()){
+                auto function = std::move(to_be_registered_.front());
+                to_be_registered_.pop_front();
+
+                foundation::ATOM function_name_atom = atom_factory_->GetOrCreate(function->GetName()).value()->atom_;
+                atom_factory_->SetFunctionProperty(function_name_atom, atom_builtin_function_property_,
+                                                   function.release());
+            }
         }
     } // functions
 } // lisp_runtime

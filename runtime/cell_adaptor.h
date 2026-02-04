@@ -20,6 +20,9 @@ namespace lisp_runtime {
          */
         CellAdaptor(const foundation::mem::Cell *cell) : cell_{cell}
         {
+            if(cell_ == nullptr){
+                auto p=cell_;
+            }
             assert(cell_ != nullptr);
         }
 
