@@ -19,6 +19,7 @@ add_library(foundation STATIC
         foundation_impl.cpp
         foundation_impl.h
         foundation.h
+        debug_output.h
 )
 
 

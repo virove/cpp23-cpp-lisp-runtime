@@ -16,6 +16,10 @@ add_executable(UnitTests
         utility_to_string_test.cpp
         basic_objects_eval_test.cpp
         base_test_context.h
+        builtin_funtion_test.cpp
+        forms_test.cpp
+        mocks/RuntimeMock.h
+        simple_eval_test_context.h
 )
 
 target_link_libraries(UnitTests

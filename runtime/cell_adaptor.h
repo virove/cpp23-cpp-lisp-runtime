@@ -98,6 +98,11 @@ namespace lisp_runtime {
         }
 
         [[nodiscard]]
+        inline bool IsAtom()const{
+            return cell_->GetType() == foundation::mem::Cell::Type::AtomType;
+        }
+
+        [[nodiscard]]
         inline foundation::ATOM GetAtom() const {
             return cell_->atom_;
         }
@@ -105,6 +110,9 @@ namespace lisp_runtime {
 
         [[nodiscard]]
         inline lisp_runtime::CellAdaptor Car() const{
+            if(cell_->type_ != foundation::mem::Cell::Type::ListType){
+                auto a = cell_;
+            }
             assert(cell_->type_ == foundation::mem::Cell::Type::ListType);
 
             return cell_->head_;

@@ -1,20 +1,18 @@
-
-#include <iostream>
 #include "app.h"
 
 namespace app{
 
 void App::Run() {
-    lisp_runtime_->Eval({   foundation::Defines::NIL()},{ foundation::Defines::NIL()} );
+    runtime_->GetLispRuntime()->Eval({   foundation::Defines::NIL()},{ foundation::Defines::NIL()} );
 }
 
 void App::Init() {
     foundation_->Init();
-    lisp_runtime_->Init();
+    runtime_->Init();
 }
 
 void App::Shutdown() {
-    lisp_runtime_->Shutdown();
+    runtime_->Shutdown();
     foundation_->Shutdown();
 }
 
