@@ -26,7 +26,7 @@ foundation::mem::CellList *lisp_runtime::SimpleCellFactory::CreateListCell() {
 }
 
 foundation::mem::CellList *
-lisp_runtime::SimpleCellFactory::CreateListCell(foundation::mem::Cell *head, foundation::mem::Cell *tail) {
+lisp_runtime::SimpleCellFactory::CreateListCell(const foundation::mem::Cell *head, const foundation::mem::Cell *tail) {
     auto an_optional_cell = memory_management_->Allocate();
     if(!an_optional_cell.has_value()){
         throw MemoryAllocationNoMemoryError("Failed to allocate memory");

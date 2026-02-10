@@ -1,24 +1,25 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <gmock/gmock-matchers.h>
 
-#include "base_test_context.h"
-#include "boost/di/extension/scopes/shared.hpp"
 #include "boost/di.hpp"
+#include "boost/di/extension/scopes/shared.hpp"
+
 #include "mem/allocator_from_arena.h"
 #include "lisp_runtime.h"
 #include "simple_cell_factory.h"
+#include "simple_lisp_runtime.h"
 #include "atom_factory_impl.h"
 #include "foundation_impl.h"
-#include "simple_lisp_runtime.h"
+#include "base_test_context.h"
+#include "runtime_impl.h"
 #include "forms/forms_impl.h"
 #include "functions/functions_impl.h"
-
-#include <memory>
 #include "simple_eval_test_context.h"
-#include "runtime_impl.h"
+#include "utilities/utilities.h"
 #include "variables/variables_impl.h"
 
 namespace di = boost::di;
+
+using ::testing::_;
 
 constexpr std::size_t kPreallocatedMemory_CellNumber = 1000;
 
@@ -43,57 +44,67 @@ namespace {
 }
 
 using EvalTestContext = SimpleEvalTestContext<make_test_injector>;
-//class EvalTestContext : public test_support::BaseTestContext<make_test_injector>{
-//public:
-//    explicit EvalTestContext() {
-//        lisp_runtime_ = injector.template create<std::shared_ptr<lisp_runtime::LispRuntime>>();
-//    }
-//
-//    std::shared_ptr<lisp_runtime::LispRuntime> GetSimpleLispRuntime(){
-//        return lisp_runtime_;
-//    }
-//
-//    std::shared_ptr<lisp_runtime::LispRuntime> lisp_runtime_;
-//};
 
+TEST(FunctionTest, eval_lambda) {
 
-TEST(BasicObjectEvalTest, eval_number) {
     EvalTestContext simple_eval_test_context;
 
     auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
-    auto cell_factory = simple_eval_test_context.CellFactory();
 
-    auto argument = cell_factory->CreateNumber(123);
-    auto result = lisp_runtime->Eval({argument},  {foundation::Defines::NIL() } );
+    auto parser = simple_eval_test_context.CreateParser();
+    {
+        auto *lambda = "((lambda (x y) (+ x y)) 2 3)";
 
-    const auto& expected = cell_factory->CreateNumber(123);
-    EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::NumberType);
-    EXPECT_EQ(result.GetHead()->number_ , expected->number_);
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(lambda);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_TRUE(result.GetType() == foundation::mem::Cell::Type::NumberType);
+        EXPECT_EQ(result.GetThisCell()->number_ ,5);
+    }
 }
 
-
-TEST(BasicObjectEvalTest, eval_nil) {
+TEST(FormTest, function_test) {
     EvalTestContext simple_eval_test_context;
 
     auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
-    auto cell_factory = simple_eval_test_context.CellFactory();
 
-    auto result = lisp_runtime->Eval({foundation::Defines::NIL()},  {foundation::Defines::NIL() } );
+    auto parser = simple_eval_test_context.CreateParser();
+    {
+        auto *function_definition = "(defun factorial (n)\n"
+                                    "  (if (= n 0)\n"
+                                    "      1\n"
+                                    "      (* n (factorial (- n 1))) ) )";
 
-    EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::AtomType);
-    EXPECT_EQ(result.GetThisCell(), foundation::Defines::NIL());
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(function_definition);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_EQ(result.GetThisCell(), simple_eval_test_context.CellFactory()->GetOrCreate("factorial"));
+
+
+    }
+
+    {
+        auto *function_definition = "(factorial 5)";
+
+        lisp_runtime::Stream<test_support::Std_StringStreamType> stream1(function_definition);
+
+        auto expression =parser->Parse(&stream1);
+
+        auto result = simple_eval_test_context.GetSimpleLispRuntime()->Eval(expression,{foundation::Defines::NIL()});
+
+        EXPECT_EQ(result.GetType() , foundation::mem::Cell::Type::NumberType  );
+        EXPECT_EQ(result.GetThisCell()->number_ , 120 );
+
+
+    }
+
 }
 
 
-TEST(BasicObjectEvalTest, eval_T) {
-    EvalTestContext simple_eval_test_context;
-
-    auto lisp_runtime = simple_eval_test_context.GetSimpleLispRuntime();
-    auto cell_factory = simple_eval_test_context.CellFactory();
-
-    auto result = lisp_runtime->Eval({foundation::Defines::T()},  {foundation::Defines::NIL() } );
-
-    EXPECT_TRUE(result.GetHead()->GetType() == foundation::mem::Cell::Type::AtomType);
-    EXPECT_EQ(result.GetThisCell(), foundation::Defines::T());
-}
 

@@ -1,6 +1,7 @@
 #ifndef FUNCTIONS_IMPL_H
 #define FUNCTIONS_IMPL_H
 
+#include <list>
 #include "functions.h"
 #include "cell_factory.h"
 
@@ -21,8 +22,9 @@ namespace lisp_runtime {
 
             FindFunctionResult FindFunction(const CellAdaptor &function_name) override;
 
-            void RegisterBuiltinFunction(const std::string& name, BuiltinFunction function) override;
+            void RegisterFunction(foundation::Function* function) override;
         private:
+            std::list<std::unique_ptr<foundation::Function>> to_be_registered_;
             std::unique_ptr<CellFactory> cell_factory_;
 
             std::shared_ptr<foundation::AtomFactory> atom_factory_;

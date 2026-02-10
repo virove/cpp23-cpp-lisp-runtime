@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "lisp_runtime.h"
+#include "cell_factory.h"
 
 namespace lisp_runtime {
 
@@ -15,6 +16,9 @@ namespace lisp_runtime {
 
         [[nodiscard]]
         virtual std::shared_ptr<LispRuntime> GetLispRuntime() const = 0;
+
+        [[nodiscard]]
+        virtual lisp_runtime::CellFactory* CellFactory() const = 0;
     };
 
 } // lisp_runtime  

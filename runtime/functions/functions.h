@@ -11,7 +11,7 @@ namespace lisp_runtime::functions {
 
     class Functions {
     public:
-        using FindFunctionResult = std::variant<lisp_runtime::CellAdaptor,lisp_runtime::functions::BuiltinFunction, std::nullopt_t>;
+        using FindFunctionResult = std::variant<lisp_runtime::CellAdaptor,foundation::Function*, std::nullopt_t>;
 
         virtual ~Functions() = default;
 
@@ -20,7 +20,7 @@ namespace lisp_runtime::functions {
 
         virtual FindFunctionResult FindFunction(const lisp_runtime::CellAdaptor& function_name) = 0;
 
-        virtual void RegisterBuiltinFunction(const std::string& name, lisp_runtime::functions::BuiltinFunction)=0;
+        virtual void RegisterFunction(foundation::Function*) =0;
     };
 
 }// lisp_runtime  ::functions

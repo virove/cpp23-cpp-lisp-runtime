@@ -11,6 +11,7 @@
 #include "foundation_impl.h"
 #include "forms/forms_impl.h"
 #include "functions/functions_impl.h"
+#include "variables/variables_impl.h"
 
 
 static const int kPreallocatedMemory_CellNumber = 1024*300;
@@ -29,7 +30,8 @@ int main(){
                 di::bind<lisp_runtime::Runtime>().in(di::singleton).to<lisp_runtime::RuntimeImpl>(),
                 di::bind<foundation::mem::mgr::MemoryManagement>().in(di::singleton).to<foundation::mem::mgr::SimpleMemoryManagement>(),
                 di::bind<lisp_runtime::forms::Forms>().to<lisp_runtime::forms::FormsImpl>().in(di::singleton),
-                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::singleton)
+                di::bind<lisp_runtime::functions::Functions>().to<lisp_runtime::functions::FunctionsImpl>().in(di::singleton),
+                di::bind<lisp_runtime::vars::Variables>().to<lisp_runtime::vars::VariablesImpl>().in(di::singleton)
         );
 
     app = injector.create<std::unique_ptr<app::App>>();

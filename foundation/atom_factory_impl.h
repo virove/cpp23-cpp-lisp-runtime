@@ -78,11 +78,11 @@ namespace foundation {
             }
         }
     }
-        using FuncType = foundation::mem::Cell* (*)( const foundation::mem::Cell*);
 
-        std::optional<FuncType>
+
+        std::optional<foundation::Function*>
         GetFunctionProperty(foundation::ATOM atom, foundation::ATOM property_name) const override {
-            return GetPropertyGeneric<FuncType>(atom, property_name );
+            return GetPropertyGeneric<foundation::Function*>(atom, property_name );
         }
 
         std::optional<std::string> GetPropertyString(foundation::ATOM atom,foundation::ATOM property_name)const override{
@@ -97,9 +97,8 @@ namespace foundation {
             SetGenericProperty(atom, name, value);
         }
 
-        void SetFunctionProperty(foundation::ATOM atom, foundation::ATOM name,
-                                 foundation::mem::Cell* (*fun)(const foundation::mem::Cell*)) override {
-            SetGenericProperty(atom, name, fun);
+        void SetFunctionProperty(foundation::ATOM atom, foundation::ATOM name, foundation::Function* function) override {
+            SetGenericProperty(atom, name, function);
         }
 
     private:

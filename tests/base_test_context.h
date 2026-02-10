@@ -44,7 +44,7 @@ namespace test_support{
                 return cell_factory_.get();
             }
 
-            const std::shared_ptr<foundation::AtomFactory> &GetAtomFactory() const {
+            std::shared_ptr<foundation::AtomFactory> GetAtomFactory() const {
                 return atom_factory_;
             }
 

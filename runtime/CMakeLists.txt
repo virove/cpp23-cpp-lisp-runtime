@@ -26,6 +26,13 @@ add_library(runtime STATIC
         functions/functions.h
         functions/functions_impl.cpp
         functions/functions_impl.h
+        forms/defun_form.cpp
+        forms/defun_form.h
+        forms/if_form.cpp
+        forms/if_form.h
+        variables/variables.h
+        variables/variables_impl.cpp
+        variables/variables_impl.h
 )
 
 
